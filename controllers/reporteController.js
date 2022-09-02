@@ -60,17 +60,21 @@ const actualizarReporte = async (req, res) => {
 		return res.status(403).json({ msg: error.message })
 	}
 
-	reporte.sedimento = req.body || reporte.sedimento
-	reporte.objetos = req.body || reporte.objetos
-	reporte.piso = req.body || reporte.piso
-	reporte.paredes = req.body || reporte.paredes
-	reporte.techo = req.body || reporte.techo
-	reporte.succiones = req.body || reporte. succiones
-	reporte.numerosucciones = req.body || reporte.numerosucciones
-	reporte.escaleras = req.body || reporte.escaleras
-	reporte.numeroescaleras = req.body || reporte.numeroescaleras
-	reporte.estado = req.body || reporte.estado
-	reporte.completado = req.body || reporte.estado
+	reporte.nombreservicio = req.body.nombreservicio ||reporte.nombreservicio;
+	reporte.sedimento = req.body.sedimento ||reporte.sedimento;
+	reporte.objetos = req.body.objetos ||reporte.objetos;
+	reporte.piso = req.body.piso ||reporte.piso;
+	reporte.paredes = req.body.paredes ||reporte.paredes;
+	reporte.techo = req.body.techo ||reporte.techo;
+	reporte.succiones = req.body.succiones ||reporte. succiones;
+	reporte.numerosucciones = req.body.numerosucciones ||reporte.numerosucciones;
+	reporte.escaleras = req.body.escaleras ||reporte.escaleras;
+	reporte.numeroescaleras = req.body.numeroescaleras ||reporte.numeroescaleras;
+	reporte.vasoscomunicantes = req.body.vasoscomunicantes ||reporte.vasoscomunicantes;
+	reporte.observaciones = req.body.observaciones ||reporte.observaciones;
+	reporte.status = req.body.status ||reporte.status;
+	//reporte.estado = req.body.estado ||reporte.estado;
+	//reporte.completado = req.body.completado ||reporte.completado;
 
 	try {
 		const reporteAlmacenado = await reporte.save()
@@ -92,13 +96,11 @@ const eliminarReporte = async (req, res) => {
 
 	if (reporte.proyecto.creador.toString() !== req.usuario._id.toString()) {
 		const error = new Error("Acción no válida")
-		return res.status(404).json({ msg: error.message })
+		return res.status(403).json({ msg: error.message })
 	}
 
 	try {
-		const servicio = await Servicio.findById(reporte.servicio)
-		servicio.reportes.pull(reporte._id)
-		await Promise.allSettled([ await servicio.save(), await reporte.deleteOne() ])
+		await reporte.deleteOne()
 		res.json({ msg: "El reporte se eliminó" })
 	} catch (error) {
 		console.log(error)
@@ -108,7 +110,7 @@ const eliminarReporte = async (req, res) => {
 const cambiarEstado = async (req,res) => {
 	const { id } = req.params
 
-	const reporte = await Reporte. findById(id).populate("servicio")
+	const reporte = await Reporte.findById(id).populate("servicio")
 
 	if (!reporte) {
 		const error = new Error("Reporte no encontrado")
@@ -116,8 +118,8 @@ const cambiarEstado = async (req,res) => {
 	}
 
 	if (
-		reporte.servicio.creador.toString() !== req.usuarui._id.toString() && !reporte.servicio.colaboradores.some(
-			(colaboradores) => colaboradores._id.toString() === req.usuario._id.toString()
+		reporte.servicio.creador.toString() !== req.usuario._id.toString() && !reporte.servicio.colaboradores.some(
+			(colaborador) => colaborador._id.toString() === req.usuario._id.toString()
 		)
 	) {
 		const error = new Error("Acción no válida")

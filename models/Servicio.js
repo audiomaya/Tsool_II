@@ -62,12 +62,6 @@ const serviciosSchema = mongoose.Schema(
         ref: "Reporte",
       },
     ],
-    tareas: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Tarea",
-      },
-    ],
 
     colaboradores: [
       {

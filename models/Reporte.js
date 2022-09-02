@@ -3,8 +3,7 @@ import mongoose from "mongoose";
 const reporteSchema = mongoose.Schema(
   {
     nombreservicio: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Servicio",
+      type: String,
       required: true,
     },
     sedimento: {
@@ -51,14 +50,18 @@ const reporteSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    estado: {
+    status: {
       type: Boolean,
       default: false,
+    },
+    estado: {
+      type: String,
+      required: true,
+      enum: ["Realizado", "Proceso"]
     },
     completado: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Usuario",
-      default: null,
     },
   },
   {

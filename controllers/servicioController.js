@@ -2,12 +2,7 @@ import Servicio from "../models/Servicio.js"
 import Usuario from "../models/Usuario.js"
 
 const obtenerServicios = async (req, res) => {
-	const servicios = await Servicio.find({
-		$or: [
-			{ colaboradores: { $in: req.usuario } },
-			{ creador: { $in: req.usuario } },
-		],
-	}).select("-reportes");
+	const servicios = await Servicio.find().where("creador").equals(req.usuario).select("-reportes");
 	res.json(servicios);
 }
 
@@ -39,10 +34,7 @@ const obtenerServicio = async (req, res) => {
 	}
 
 	if (
-		servicio.creador.toString() !== req.usuario._id.toString() && !servicio.colaboradores.some(
-			(colaborador) => colaborador._id.toString() === req.usuario._id.toString()
-		)
-	) {
+		servicio.creador.toString() !== req.usuario._id.toString() && !servicio.colaboradores.some( colaborador => colaborador._id.toString() === req.usuario._id.toString() )) {
 		const error = new Error("Acción No Válida")
 		return res.status(401).json({ msg: error.message })
 	}

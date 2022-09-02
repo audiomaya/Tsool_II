@@ -25,7 +25,6 @@ const agregarTarea = async (req, res) => {
 	} catch (error) {
 		console.log(error)
 	}
-
 }
 
 const obtenerTarea = async (req, res) => {
@@ -40,13 +39,11 @@ const obtenerTarea = async (req, res) => {
 	}
 
 	if(tarea.proyecto.creador.toString() !== req.usuario._id.toString()) {
-		
 		const error = new Error('Acción no válida.')
 		return res.status(403).json({msg: error.message})
 	}
 
 	res.json(tarea)
-
 }
 
 const actualizarTarea = async (req, res) => {
@@ -118,8 +115,7 @@ const cambiarEstado = async (req, res) => {
 	}
 
   if (
-    tarea.proyecto.creador.toString() !== req.usuario._id.toString() &&
-    !tarea.proyecto.colaboradores.some(
+    tarea.proyecto.creador.toString() !== req.usuario._id.toString() && !tarea.proyecto.colaboradores.some(
       (colaborador) => colaborador._id.toString() === req.usuario._id.toString()
     )
   ) {

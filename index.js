@@ -37,7 +37,7 @@ app.use("/api/usuarios", usuarioRoutes)
 app.use("/api/proyectos", proyectoRoutes)
 app.use("/api/tareas", tareaRoutes)
 app.use("/api/servicios", servicioRoutes)
-app.use("/api/reporte", reporteRoutes)
+app.use("/api/reportes", reporteRoutes)
 
 const PORT = process.env.PORT || 4000
 const servidor = app.listen(PORT, () => {
@@ -81,4 +81,8 @@ io.on('connection', (socket) => {
 		const proyecto = tarea.proyecto._id
 		socket.to(proyecto).emit('nuevoestado', tarea)
 	})*/
+	socket.on('nuevo reporte', (reporte) => {
+		const servicio = reporte.servicio
+		socket.to(servicio).emit('reporte agregado', reporte)
+	})
 })
