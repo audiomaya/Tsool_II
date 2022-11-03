@@ -18,7 +18,7 @@ const agregarReporte = async (req, res) => {
 
 	try {
 		const reporteAlmacenado = await Reporte.create(req.body)
-		//Almacenar el ID en el proyecto
+		//Almacenar el ID en el servicio
 		existeServicio.reportes.push(reporteAlmacenado._id)
 		await existeServicio.save()
 		res.json(reporteAlmacenado)
@@ -72,8 +72,8 @@ const actualizarReporte = async (req, res) => {
 	reporte.numeroescaleras = req.body.numeroescaleras ||reporte.numeroescaleras;
 	reporte.vasoscomunicantes = req.body.vasoscomunicantes ||reporte.vasoscomunicantes;
 	reporte.observaciones = req.body.observaciones ||reporte.observaciones;
-	reporte.status = req.body.status ||reporte.status;
-	//reporte.estado = req.body.estado ||reporte.estado;
+	reporte.estado = req.body.estado ||reporte.estado;
+	//reporte.status = req.body.status ||reporte.status;
 	//reporte.completado = req.body.completado ||reporte.completado;
 
 	try {
@@ -94,13 +94,17 @@ const eliminarReporte = async (req, res) => {
 		return res.status(404).json({ msg: error.message })
 	}
 
-	if (reporte.proyecto.creador.toString() !== req.usuario._id.toString()) {
+	if (reporte.servicio.creador.toString() !== req.usuario._id.toString()) {
 		const error = new Error("Acción no válida")
 		return res.status(403).json({ msg: error.message })
 	}
 
 	try {
-		await reporte.deleteOne()
+		const servicio = await Servicio.findById(reporte.servicio)
+		servicio.reportes.pull(reporte._id)
+
+		await Promise.allSettled([ await servicio.save(), await reporte.deleteOne() ])
+
 		res.json({ msg: "El reporte se eliminó" })
 	} catch (error) {
 		console.log(error)
@@ -118,8 +122,8 @@ const cambiarEstado = async (req,res) => {
 	}
 
 	if (
-		reporte.servicio.creador.toString() !== req.usuario._id.toString() && !reporte.servicio.colaboradores.some(
-			(colaborador) => colaborador._id.toString() === req.usuario._id.toString()
+		reporte.servicio.creador.toString() !== req.usuario._id.toString() && !reporte.servicio.colaboradoresServicios.some(
+			(colaboradorServicios) => colaboradorServicios._id.toString() === req.usuario._id.toString()
 		)
 	) {
 		const error = new Error("Acción no válida")

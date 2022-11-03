@@ -81,8 +81,19 @@ io.on('connection', (socket) => {
 		const proyecto = tarea.proyecto._id
 		socket.to(proyecto).emit('nuevoestado', tarea)
 	})*/
+
+	socket.on('abrir servicio', (servicio) => {
+		socket.join(servicio)
+	})
+
 	socket.on('nuevo reporte', (reporte) => {
 		const servicio = reporte.servicio
-		socket.to(servicio).emit('reporte agregado', reporte)
+		socket.to(servicio).emit("reporte agregado", reporte)
 	})
+
+	socket.on('eliminar reporte', (reporte) =>{
+		const servicio = reporte.servicio
+		socket.to(servicio).emit('reporte eliminado', reporte)
+	})
+
 })

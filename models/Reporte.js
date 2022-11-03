@@ -61,8 +61,8 @@ const reporteSchema = mongoose.Schema(
     },
     completado: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Usuario",
-    },
+      ref: 'Usuario',
+    }
   },
   {
     timestamps: true,

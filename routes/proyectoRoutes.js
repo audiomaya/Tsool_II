@@ -29,4 +29,5 @@ router.post("/colaboradores", checkAuth, buscarColaborador);
 router.post("/colaboradores/:id", checkAuth, agregarColaborador);
 router.post("/eliminar-colaborador/:id", checkAuth, eliminarColaborador);
 
+
 export default router;

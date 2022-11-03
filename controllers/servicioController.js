@@ -2,8 +2,13 @@ import Servicio from "../models/Servicio.js"
 import Usuario from "../models/Usuario.js"
 
 const obtenerServicios = async (req, res) => {
-	const servicios = await Servicio.find().where("creador").equals(req.usuario).select("-reportes");
-	res.json(servicios);
+	const servicios = await Servicio.find({
+		$or: [
+			{ colaboradores: { $in: req.usuario } },
+			{ creador: { $in: req.usuario } },
+		],
+	}).select("-reportes")
+	res.json(servicios)
 }
 
 const nuevoServicio = async (req, res) => {
@@ -34,7 +39,10 @@ const obtenerServicio = async (req, res) => {
 	}
 
 	if (
-		servicio.creador.toString() !== req.usuario._id.toString() && !servicio.colaboradores.some( colaborador => colaborador._id.toString() === req.usuario._id.toString() )) {
+		servicio.creador.toString() !== req.usuario._id.toString() && !servicio.colaboradores.some(
+			(colaboradorServicios) => colaboradorServicios._id.toString() === req.usuario._id.toString() 
+		)
+	) {
 		const error = new Error("Acción No Válida")
 		return res.status(401).json({ msg: error.message })
 	}
@@ -98,7 +106,7 @@ const eliminarServicio = async (req, res) => {
 	}
 }
 
-const buscarColaborador = async (req, res) => {
+const buscarColaboradorServicios = async (req, res) => {
 	const { email } = req.body
 	const usuario = await Usuario.findOne({ email }).select(
 	"-confirmado -createAt -password -token -updateAt -__v"
@@ -112,7 +120,7 @@ const buscarColaborador = async (req, res) => {
 	res.json(usuario)
 }
 
-const agregarColaborador = async (req, res) => {
+const agregarColaboradorServicios = async (req, res) => {
 	const servicio = await Servicio.findById(req.params.id)
 
 	if (!servicio) {
@@ -153,12 +161,17 @@ const agregarColaborador = async (req, res) => {
 	res.json({ msg: "Colaborador Agregado Correctamente" })
 }
 
-const eliminarColaborador = async (req, res) => {
+const eliminarColaboradorServicios = async (req, res) => {
 	const servicio = await Servicio.findById(req.params.id)
 
 	if (!servicio) {
 		const error = new Error("Servicio No Encontrado")
 		return res.startus(404).json({ msg: error.message })
+	}
+
+	if (servicio.creador.toString() !== req.usuario._id.toString()) {
+		const error = new Error("Acción no válida")
+		return res.status(404).json({ msg: error.massage })
 	}
 
 	//Esta bien, se puede eliminar
@@ -173,7 +186,7 @@ export {
 	obtenerServicio,
 	editarServicio,
 	eliminarServicio,
-	buscarColaborador,
-	agregarColaborador,
-	eliminarColaborador,
+	buscarColaboradorServicios,
+	agregarColaboradorServicios,
+	eliminarColaboradorServicios,
 }

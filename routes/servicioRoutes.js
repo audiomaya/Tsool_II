@@ -6,8 +6,9 @@ import {
 	obtenerServicio,
 	editarServicio,
 	eliminarServicio,
-	agregarColaborador,
-	eliminarColaborador,
+	agregarColaboradorServicios,
+	eliminarColaboradorServicios,
+  buscarColaboradorServicios,
 } from "../controllers/servicioController.js"
 import checkAuth from "../middleware/checkAuth.js"
 
@@ -24,7 +25,8 @@ router
 	.put(checkAuth, editarServicio)
 	.delete(checkAuth, eliminarServicio);
 
-router.post("/agregar-colaborador/:id", checkAuth, agregarColaborador)
-router.post("/eliminar-colaborador/:id", checkAuth, eliminarColaborador);
+router.post("/colaboradores", checkAuth, buscarColaboradorServicios);
+router.post("/colaboradores/:id", checkAuth, agregarColaboradorServicios)
+router.post("/eliminar-colaborador-servicios/:id", checkAuth, eliminarColaboradorServicios)
 
 export default router
